@@ -90,7 +90,7 @@ export function SearchProvider({ children }) {
         }
     };
 
-    const saveToHistory = async (productName) => {
+    const saveToHistory = async (productName, currentGemini = [], currentShopping = [], currentInfo = null, currentImage = null) => {
         const token = localStorage.getItem('shopsmart_token');
         if (!token) return;
 
@@ -98,7 +98,13 @@ export function SearchProvider({ children }) {
             await fetch(`${API_URL}/api/history`, {
                 method: 'POST',
                 headers: { 'Authorization': token, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ product_name: productName })
+                body: JSON.stringify({ 
+                    product_name: productName,
+                    gemini_deals: currentGemini,
+                    shopping_deals: currentShopping,
+                    product_info: currentInfo,
+                    source_image: currentImage
+                })
             });
             fetchHistory(token);
         } catch (err) {
@@ -133,7 +139,10 @@ export function SearchProvider({ children }) {
                 const res = await fetch(`${API_URL}/api/wishlist`, {
                     method: 'POST',
                     headers: { 'Authorization': token, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(deal)
+                    body: JSON.stringify({
+                        ...deal,
+                        source_image: lastImage // Include the fallback image
+                    })
                 });
                 if (res.ok) {
                     fetchWishlist(token);
@@ -141,6 +150,30 @@ export function SearchProvider({ children }) {
             } catch (err) {
                 console.error(err);
             }
+        }
+    };
+
+    const loadHistoryEntry = async (historyId) => {
+        const token = localStorage.getItem('shopsmart_token');
+        if (!token) return;
+
+        try {
+            const res = await fetch(`${API_URL}/api/history/${historyId}`, {
+                headers: { 'Authorization': token }
+            });
+            const data = await res.json();
+            
+            if (data.gemini_deals) {
+                setGeminiDeals(data.gemini_deals);
+                setShoppingDeals(data.shopping_deals || []);
+                setProductInfo(data.product_info || null);
+                setLastImage(data.source_image || null);
+                return true;
+            }
+            return false;
+        } catch (err) {
+            console.error("Failed to load history detail", err);
+            return false;
         }
     };
 

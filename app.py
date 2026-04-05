@@ -298,21 +298,21 @@ def manage_wishlist():
             return jsonify({"wishlist": items}), 200
             
         elif request.method == 'POST':
-            data = request.json
-            import datetime
-            wishlist_item = {
+            req_data = request.json
+            item = {
                 "user_id": user_id_str,
-                "store": data.get('store'),
-                "title": data.get('title'),
-                "price_str": data.get('price_str'),
-                "price": data.get('price'),
-                "link": data.get('link'),
-                "image": data.get('image'),
-                "rating": data.get('rating'),
-                "reviews": data.get('reviews'),
-                "timestamp": datetime.datetime.utcnow()
+                "store": req_data.get('store'),
+                "title": req_data.get('title'),
+                "price_str": req_data.get('price_str'),
+                "price": req_data.get('price'),
+                "link": req_data.get('link'),
+                "image": req_data.get('image'),
+                "rating": req_data.get('rating'),
+                "reviews": req_data.get('reviews'),
+                "source_image": req_data.get('source_image'), # Store the original upload for fallback
+                "timestamp": datetime.datetime.now(datetime.UTC)
             }
-            db.wishlist.insert_one(wishlist_item)
+            db.wishlist.insert_one(item)
             return jsonify({"message": "Added to wishlist"}), 201
             
         elif request.method == 'DELETE':
@@ -321,6 +321,71 @@ def manage_wishlist():
             db.wishlist.delete_one({"_id": ObjectId(item_id), "user_id": user_id_str})
             return jsonify({"message": "Removed from wishlist"}), 200
             
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/history', methods=['GET', 'POST'])
+def manage_history():
+    try:
+        token = request.headers.get('Authorization')
+        if not token:
+            return jsonify({"error": "Unauthorized"}), 401
+            
+        user = db.users.find_one({"token": token}, {"_id": 1})
+        if not user:
+            return jsonify({"error": "Invalid session"}), 401
+            
+        user_id_str = str(user['_id'])
+            
+        if request.method == 'GET':
+            # Returns a summary for the history list
+            items_cursor = db.history.find({"user_id": user_id_str}, {"gemini_deals": 0, "shopping_deals": 0}).sort("timestamp", -1)
+            items = []
+            for item in items_cursor:
+                item['id'] = str(item['_id'])
+                item.pop('_id')
+                items.append(item)
+            return jsonify({"history": items}), 200
+            
+        elif request.method == 'POST':
+            req_data = request.json
+            item = {
+                "user_id": user_id_str,
+                "product_name": req_data.get('product_name'),
+                "gemini_deals": req_data.get('gemini_deals', []), # CACHED RESULTS
+                "shopping_deals": req_data.get('shopping_deals', []), # CACHED RESULTS
+                "product_info": req_data.get('product_info'), # CACHED INFO
+                "source_image": req_data.get('source_image'), # PERSISTENT IMAGE
+                "timestamp": datetime.datetime.now(datetime.UTC)
+            }
+            db.history.insert_one(item)
+            return jsonify({"message": "History saved"}), 201
+            
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/history/<history_id>', methods=['GET'])
+def get_history_detail(history_id):
+    try:
+        token = request.headers.get('Authorization')
+        if not token:
+            return jsonify({"error": "Unauthorized"}), 401
+            
+        user = db.users.find_one({"token": token}, {"_id": 1})
+        if not user:
+            return jsonify({"error": "Invalid session"}), 401
+            
+        from bson import ObjectId
+        history_item = db.history.find_one({"_id": ObjectId(history_id), "user_id": str(user['_id'])})
+        if not history_item:
+            return jsonify({"error": "History item not found"}), 404
+            
+        history_item['id'] = str(history_item['_id'])
+        history_item.pop('_id')
+        return jsonify(history_item), 200
+        
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

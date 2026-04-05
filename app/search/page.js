@@ -43,7 +43,15 @@ export default function SearchPage() {
 
     useEffect(() => {
         const pendingSearch = localStorage.getItem('shopsmart_pending_search');
-        if (pendingSearch) {
+        const cachedHistoryId = localStorage.getItem('shopsmart_history_id');
+
+        if (cachedHistoryId) {
+            // Priority 1: Load from Cache (Fastest)
+            localStorage.removeItem('shopsmart_history_id');
+            setShowUpload(false);
+            setLoading(false);
+        } else if (pendingSearch) {
+            // Priority 2: New Search Trigger from text
             setTextInput(pendingSearch);
             setActiveTab('text');
             localStorage.removeItem('shopsmart_pending_search');
@@ -167,7 +175,7 @@ export default function SearchPage() {
             setGeminiDeals(finalGDeals);
             setShoppingDeals(finalSDeals);
             setShowUpload(false);
-            saveToHistory(pInfo.product_name);
+            saveToHistory(pInfo.product_name, finalGDeals, finalSDeals, pInfo, lastImage);
         } catch (err) {
             console.error(err);
             setError(err.message || "Failed to fetch deals. Ensure backend is running.");
