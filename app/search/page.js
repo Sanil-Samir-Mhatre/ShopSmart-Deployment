@@ -45,6 +45,7 @@ export default function SearchPage() {
         const pendingSearch = localStorage.getItem('shopsmart_pending_search');
         if (pendingSearch) {
             setTextInput(pendingSearch);
+            setActiveTab('text');
             localStorage.removeItem('shopsmart_pending_search');
             handleSearch(pendingSearch);
         } else if (geminiDeals.length || shoppingDeals.length) {
@@ -95,15 +96,18 @@ export default function SearchPage() {
         setIsCameraActive(false);
     };
 
-    const handleSearch = async () => {
+    const handleSearch = async (overrideText = null) => {
         let payload = {};
-        const messages = activeTab === 'text' 
+        const isHistorySearch = !!overrideText;
+        const currentSearchText = overrideText || textInput;
+
+        const messages = (activeTab === 'text' || isHistorySearch)
             ? ["The results are loading...", "Aggregating market data...", "Finding the best and lowest prices..."]
             : ["The results are loading...", "Identifying the product in your image...", "Searching across various e-commerce sites to give you the best prices..."];
 
-        if (activeTab === 'text') {
-            if (!textInput) return alert("Please type something!");
-            payload = { text: textInput };
+        if (activeTab === 'text' || isHistorySearch) {
+            if (!currentSearchText) return alert("Please type something!");
+            payload = { text: currentSearchText };
             setLastImage(null);
         } else {
             if (!lastImage) return alert("Please provide an image!");
