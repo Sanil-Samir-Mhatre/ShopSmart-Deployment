@@ -148,37 +148,52 @@ export default function SearchPage() {
             const pInfo = await idRes.json();
             setProductInfo(pInfo);
 
-            // Step 2: Fetch Deals for BOTH engines in parallel
-            const [geminiRes, shoppingRes] = await Promise.all([
-                fetch(`${API_URL}/api/deals`, {
+            setLoadingMessage("Fetching Discovery Options...");
+
+            // Use independent fetching to avoid whole-page crash if one API fails
+            let finalGDeals = [];
+            let finalSDeals = [];
+
+            try {
+                const geminiRes = await fetch(`${API_URL}/api/deals`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ product_name: pInfo.product_name, brand: pInfo.brand, type: 'gemini' })
-                }),
-                fetch(`${API_URL}/api/deals`, {
+                });
+                const gData = await geminiRes.json();
+                finalGDeals = gData.deals || [];
+            } catch (err) {
+                console.error("Gemini Engine Failed:", err);
+            }
+
+            try {
+                const shoppingRes = await fetch(`${API_URL}/api/deals`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ product_name: pInfo.product_name, brand: pInfo.brand, type: 'shopping' })
-                })
-            ]);
-
-            const gData = await geminiRes.json();
-            const sData = await shoppingRes.json();
-
-            const finalGDeals = gData.deals || [];
-            const finalSDeals = sData.deals || [];
+                });
+                const sData = await shoppingRes.json();
+                finalSDeals = sData.deals || [];
+            } catch (err) {
+                console.error("Shopping Engine Failed:", err);
+            }
 
             if (finalGDeals.length === 0 && finalSDeals.length === 0) {
-                setError("No deals found for this product. Try adjusting your search term.");
+                throw new Error("No specific deals found at this moment. Try searching for a broader product name.");
             }
 
             setGeminiDeals(finalGDeals);
             setShoppingDeals(finalSDeals);
+            
+            // Default to whichever engine actually found something
+            if (finalGDeals.length === 0) setEngine('shopping');
+            else setEngine('gemini');
+
             setShowUpload(false);
             saveToHistory(pInfo.product_name, finalGDeals, finalSDeals, pInfo, lastImage);
         } catch (err) {
-            console.error(err);
-            setError(err.message || "Failed to fetch deals. Ensure backend is running.");
+            console.error("GLOBAL SEARCH ERROR:", err);
+            setError(err.message || "Failed to reach the ShopSmart API. Check your internet connection.");
         } finally {
             clearInterval(msgTimer);
             setLoading(false);
