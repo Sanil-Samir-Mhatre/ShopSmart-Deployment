@@ -121,6 +121,7 @@ export default function SearchPage() {
             payload = { image: lastImage };
         }
 
+        setShowUpload(false);
         setLoading(true);
         setError(null);
         setLoadingMessage(messages[0]);
@@ -143,7 +144,10 @@ export default function SearchPage() {
                 body: JSON.stringify(payload)
             });
             
-            if (!idRes.ok) throw new Error("Could not identify product. Please check your internet or try a different search.");
+            if (!idRes.ok) {
+                const errData = await idRes.json().catch(() => ({}));
+                throw new Error(errData.error || "Could not identify product. Please check your internet or try a different search.");
+            }
             
             const pInfo = await idRes.json();
             setProductInfo(pInfo);
@@ -350,6 +354,16 @@ export default function SearchPage() {
                     )}
 
                     <button className="shopsmart-btn" onClick={() => handleSearch()}>ShopSmart</button>
+                    
+                    {error && (
+                        <div className="error-container" style={{ marginTop: '2rem' }}>
+                            <div className="error-box">
+                                <i className="fa-solid fa-triangle-exclamation error-icon"></i>
+                                <h3 className="error-title">Search Error</h3>
+                                <p className="error-msg">{error}</p>
+                            </div>
+                        </div>
+                    )}
                 </section>
             ) : (
                 <section className="results-container">
@@ -420,10 +434,10 @@ export default function SearchPage() {
                                     {[1, 2, 3, 4, 5, 6].map(i => <SkeletonCard key={i} />)}
                                 </div>
                             ) : error ? (
-                                <div className="error-container">
-                                    <div className="error-box">
+                                <div className="error-container" style={{ gridColumn: '1 / -1' }}>
+                                    <div className="error-box" style={{ width: '100%' }}>
                                         <i className="fa-solid fa-triangle-exclamation error-icon"></i>
-                                        <h3 className="error-title">Oops! No Deals Found</h3>
+                                        <h3 className="error-title">Oops! Display Error</h3>
                                         <p className="error-msg">{error}</p>
                                         <button className="shopsmart-btn" onClick={() => setShowUpload(true)} style={{ marginTop: '1rem' }}>
                                             TRY ANOTHER SEARCH

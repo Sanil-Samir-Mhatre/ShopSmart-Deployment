@@ -187,9 +187,17 @@ def identify():
             contents.append(f"Product Search Query: {data['text']}")
             
         response = model.generate_content(contents)
-        text = response.text.replace('```json', '').replace('```', '').strip()
+        text = response.text
+        print(f"AI Identify Response: {text}") # Diagnostic
         
-        return jsonify(json.loads(text))
+        # Robust JSON extraction
+        import re
+        json_match = re.search(r'\{.*\}', text, re.DOTALL)
+        if json_match:
+            return jsonify(json.loads(json_match.group(0)))
+            
+        cleaned_text = text.replace('```json', '').replace('```', '').strip()
+        return jsonify(json.loads(cleaned_text))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -231,10 +239,11 @@ Example Object structure:
 """
             response = model.generate_content(prompt)
             text = response.text
+            print(f"AI Deals Response ({brand} {product_name}): {text}") # Diagnostic
             
-            # Robust JSON extraction using regex
+            # Robust JSON extraction using regex (More general [.*] to catch full array)
             import re
-            json_match = re.search(r'\[\s*{.*}\s*\]', text, re.DOTALL)
+            json_match = re.search(r'\[.*\]', text, re.DOTALL)
             if json_match:
                 deals_list = json.loads(json_match.group(0))
             else:
