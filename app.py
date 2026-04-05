@@ -230,8 +230,18 @@ Example Object structure:
 }}
 """
             response = model.generate_content(prompt)
-            text = response.text.replace('```json', '').replace('```', '').strip()
-            deals_list = json.loads(text)
+            text = response.text
+            
+            # Robust JSON extraction using regex
+            import re
+            json_match = re.search(r'\[\s*{.*}\s*\]', text, re.DOTALL)
+            if json_match:
+                deals_list = json.loads(json_match.group(0))
+            else:
+                # Fallback to cleaning logic
+                cleaned_text = text.replace('```json', '').replace('```', '').strip()
+                deals_list = json.loads(cleaned_text)
+
             return jsonify({"deals": deals_list})
             
         else:
