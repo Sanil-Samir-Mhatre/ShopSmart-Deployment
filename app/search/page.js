@@ -214,6 +214,25 @@ export default function SearchPage() {
     const sortedDeals = getSortedDeals();
     const visibleDeals = sortedDeals.slice(0, visibleCount);
 
+    const handleDownload = () => {
+        const data = {
+            product: productInfo,
+            engine: engine,
+            gemini_deals: geminiDeals,
+            shopping_deals: shoppingDeals,
+            timestamp: new Date().toISOString()
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ShopSmart_${productInfo?.product_name?.replace(/\s+/g, '_') || 'Search'}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
     return (
         <main className="search-main-container">
             {loading && (
@@ -364,6 +383,20 @@ export default function SearchPage() {
                             <button className={`filter-btn ${filter === 'choice' ? 'active' : ''}`} onClick={() => setFilter('choice')}>✨ Choice Pick</button>
                             <button className={`filter-btn ${filter === 'lowest' ? 'active' : ''}`} onClick={() => setFilter('lowest')}>Lowest Price</button>
                             <button className={`filter-btn ${filter === 'highest' ? 'active' : ''}`} onClick={() => setFilter('highest')}>Highest Price</button>
+                            
+                            <button 
+                                className="filter-btn" 
+                                onClick={handleDownload}
+                                style={{ 
+                                    background: 'var(--accent-yellow)', 
+                                    color: 'var(--sub-bg-darkblue)', 
+                                    border: '2px solid black',
+                                    fontWeight: '900',
+                                    marginLeft: 'auto'
+                                }}
+                            >
+                                <i className="fa-solid fa-download"></i> DOWNLOAD JSON
+                            </button>
                         </div>
 
                         <div className="deals-list">
@@ -384,10 +417,14 @@ export default function SearchPage() {
                                 </div>
                             ) : (
                                 visibleDeals.map((deal, idx) => {
-                                    // Image fallback for Gemini results
-                                    const displayImage = (engine === 'gemini' && (!deal.image || deal.image.includes('placeholder')))
-                                        ? (lastImage || '/Images/Logo_shopsmart.png')
-                                        : (deal.image || '/Images/Logo_shopsmart.png');
+                                    // Elite Image fallback for AI results
+                                    const hasValidImage = deal.image && 
+                                                         !deal.image.includes('placeholder') && 
+                                                         !deal.image.includes('Logo_shopsmart');
+
+                                    const displayImage = hasValidImage 
+                                        ? deal.image 
+                                        : (lastImage || '/Images/Logo_shopsmart.png');
 
                                     return (
                                         <div className="deal-card" key={idx}>
