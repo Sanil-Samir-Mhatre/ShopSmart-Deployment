@@ -21,33 +21,26 @@ export default function WishlistPage() {
                             <p>Start searching for products and save your favorite deals.</p>
                         </div>
                     ) : (
-                        wishlist.map((item, idx) => {
-                            // Image fallback for cached wishlist results
-                            const displayImage = (!item.image || item.image.includes('placeholder'))
-                                ? (item.source_image || '/Images/Logo_shopsmart.png')
-                                : (item.image || '/Images/Logo_shopsmart.png');
-
-                            return (
-                                <div className="deal-card" key={idx}>
-                                    <img src={displayImage} alt={item.store} className="deal-img" />
-                                    <div className="deal-details">
-                                        <h3>{item.title}</h3>
-                                        <div className="deal-meta">
-                                            <span className="store-badge">{item.store}</span>
-                                            {item.rating && <span>⭐ {item.rating} ({item.reviews} reviews)</span>}
-                                            <button 
-                                                className="wishlist-btn active"
-                                                onClick={() => toggleWishlist(item)}
-                                            >
-                                                <i className="fa-solid fa-heart"></i>
-                                            </button>
-                                        </div>
-                                        <div className="deal-price">{item.price_str}</div>
+                        wishlist.map((item, idx) => (
+                            <div className="deal-card" key={idx}>
+                                <img src={item.image || '/Images/Logo_shopsmart.png'} alt={item.store} className="deal-img" />
+                                <div className="deal-details">
+                                    <h3>{item.title}</h3>
+                                    <div className="deal-meta">
+                                        <span className="store-badge">{item.store}</span>
+                                        {item.rating && <span>⭐ {item.rating} ({item.reviews} reviews)</span>}
+                                        <button 
+                                            className="wishlist-btn active"
+                                            onClick={() => toggleWishlist(item)}
+                                        >
+                                            <i className="fa-solid fa-heart"></i>
+                                        </button>
                                     </div>
-                                    <a href={item.link} target="_blank" className="checkout-btn">View Deal</a>
+                                    <div className="deal-price">{item.price_str}</div>
                                 </div>
-                            );
-                        })
+                                <a href={item.link} target="_blank" className="checkout-btn">View Deal</a>
+                            </div>
+                        ))
                     )}
                 </div>
             </div>

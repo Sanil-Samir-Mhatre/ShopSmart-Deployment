@@ -36,15 +36,10 @@ export default function HistoryPage() {
         }
     };
 
-    const handleSearchAgain = async (historyId) => {
-        // Load the full cached data into the context
-        const success = await loadHistoryEntry(historyId);
-        if (success) {
-            localStorage.setItem('shopsmart_history_id', historyId);
-            router.push('/search');
-        } else {
-            console.error("Failed to load history details.");
-        }
+    const handleSearchAgain = (productName) => {
+        // We'll set a temporary search flag in localStorage so the search page auto-triggers
+        localStorage.setItem('shopsmart_pending_search', productName);
+        router.push('/search');
     };
 
     if (loading) return <div className="loading-state">Loading your journey...</div>;
@@ -76,7 +71,7 @@ export default function HistoryPage() {
                             <button 
                                 className="action-btn" 
                                 style={{ transform: 'none', padding: '0.8rem 1.5rem', fontSize: '1rem' }}
-                                onClick={() => handleSearchAgain(item.id)}
+                                onClick={() => handleSearchAgain(item.product_name)}
                             >
                                 View Results <i className="fa-solid fa-arrow-right" style={{ marginLeft: '0.5rem' }}></i>
                             </button>

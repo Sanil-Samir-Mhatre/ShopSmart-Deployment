@@ -43,15 +43,7 @@ export default function SearchPage() {
 
     useEffect(() => {
         const pendingSearch = localStorage.getItem('shopsmart_pending_search');
-        const cachedHistoryId = localStorage.getItem('shopsmart_history_id');
-
-        if (cachedHistoryId) {
-            // Priority 1: Load from Cache (Fastest)
-            localStorage.removeItem('shopsmart_history_id');
-            setShowUpload(false);
-            setLoading(false);
-        } else if (pendingSearch) {
-            // Priority 2: New Search Trigger from text
+        if (pendingSearch) {
             setTextInput(pendingSearch);
             setActiveTab('text');
             localStorage.removeItem('shopsmart_pending_search');
@@ -143,13 +135,16 @@ export default function SearchPage() {
                 body: JSON.stringify(payload)
             });
             
-            if (!idRes.ok) throw new Error("Our AI couldn't identify this product. Please try a clearer photo or use text search.");
+            if (!idRes.ok) throw new Error("Could not identify product. Please check your internet or try a different search.");
             
             const pInfo = await idRes.json();
-            if (!pInfo || !pInfo.product_name) throw new Error("Identification failed. Please try again.");
-            
+            if (pInfo.error) {
+                throw new Error(pInfo.error);
+            }
+            if (!pInfo.product_name) {
+                throw new Error("Our AI couldn't identify this product. Please try a clearer photo or use text search.");
+            }
             setProductInfo(pInfo);
-            setShowUpload(false); // Transition to results dashboard immediately after ID
 
             // Step 2: Fetch Deals for BOTH engines in parallel
             const [geminiRes, shoppingRes] = await Promise.all([
@@ -157,38 +152,31 @@ export default function SearchPage() {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ product_name: pInfo.product_name, brand: pInfo.brand, type: 'gemini' })
-                }).catch(() => null),
+                }),
                 fetch(`${API_URL}/api/deals`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ product_name: pInfo.product_name, brand: pInfo.brand, type: 'shopping' })
-                }).catch(() => null)
+                })
             ]);
 
-            let finalGDeals = [];
-            let finalSDeals = [];
+            const gData = await geminiRes.json();
+            const sData = await shoppingRes.json();
 
-            if (geminiRes && geminiRes.ok) {
-                const gData = await geminiRes.json();
-                finalGDeals = gData.deals || [];
-            }
-            
-            if (shoppingRes && shoppingRes.ok) {
-                const sData = await shoppingRes.json();
-                finalSDeals = sData.deals || [];
-            }
+            const finalGDeals = gData.deals || [];
+            const finalSDeals = sData.deals || [];
 
             if (finalGDeals.length === 0 && finalSDeals.length === 0) {
-                setError("We identified the product but couldn't find matching deals. Try a different search!");
+                setError("No deals found for this product. Try adjusting your search term.");
             }
 
             setGeminiDeals(finalGDeals);
             setShoppingDeals(finalSDeals);
-            saveToHistory(pInfo.product_name, finalGDeals, finalSDeals, pInfo, lastImage);
+            setShowUpload(false);
+            saveToHistory(pInfo.product_name);
         } catch (err) {
-            console.error("Search Error:", err);
-            setError(err.message || "Something went wrong. Ensure your backend is running.");
-            setShowUpload(true); // Return to search panel on fatal error
+            console.error(err);
+            setError(err.message || "Failed to fetch deals. Ensure backend is running.");
         } finally {
             clearInterval(msgTimer);
             setLoading(false);
@@ -223,25 +211,6 @@ export default function SearchPage() {
 
     const sortedDeals = getSortedDeals();
     const visibleDeals = sortedDeals.slice(0, visibleCount);
-
-    const handleDownload = () => {
-        const data = {
-            product: productInfo,
-            engine: engine,
-            gemini_deals: geminiDeals,
-            shopping_deals: shoppingDeals,
-            timestamp: new Date().toISOString()
-        };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `ShopSmart_${productInfo?.product_name?.replace(/\s+/g, '_') || 'Search'}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    };
 
     return (
         <main className="search-main-container">
@@ -393,20 +362,6 @@ export default function SearchPage() {
                             <button className={`filter-btn ${filter === 'choice' ? 'active' : ''}`} onClick={() => setFilter('choice')}>✨ Choice Pick</button>
                             <button className={`filter-btn ${filter === 'lowest' ? 'active' : ''}`} onClick={() => setFilter('lowest')}>Lowest Price</button>
                             <button className={`filter-btn ${filter === 'highest' ? 'active' : ''}`} onClick={() => setFilter('highest')}>Highest Price</button>
-                            
-                            <button 
-                                className="filter-btn" 
-                                onClick={handleDownload}
-                                style={{ 
-                                    background: 'var(--accent-yellow)', 
-                                    color: 'var(--sub-bg-darkblue)', 
-                                    border: '2px solid black',
-                                    fontWeight: '900',
-                                    marginLeft: 'auto'
-                                }}
-                            >
-                                <i className="fa-solid fa-download"></i> DOWNLOAD JSON
-                            </button>
                         </div>
 
                         <div className="deals-list">
@@ -427,14 +382,10 @@ export default function SearchPage() {
                                 </div>
                             ) : (
                                 visibleDeals.map((deal, idx) => {
-                                    // Elite Image fallback for AI results
-                                    const hasValidImage = deal.image && 
-                                                         !deal.image.includes('placeholder') && 
-                                                         !deal.image.includes('Logo_shopsmart');
-
-                                    const displayImage = hasValidImage 
-                                        ? deal.image 
-                                        : (lastImage || '/Images/Logo_shopsmart.png');
+                                    // Image fallback for Gemini results
+                                    const displayImage = (engine === 'gemini' && (!deal.image || deal.image.includes('placeholder')))
+                                        ? (lastImage || '/Images/Logo_shopsmart.png')
+                                        : (deal.image || '/Images/Logo_shopsmart.png');
 
                                     return (
                                         <div className="deal-card" key={idx}>
