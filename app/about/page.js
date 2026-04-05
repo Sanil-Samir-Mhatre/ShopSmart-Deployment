@@ -16,8 +16,8 @@ const aboutData = [
         { strong: 'Price Drop Tracking:', text: ' Don\'t want to buy just yet? Smart shoppers know how to wait. Create an account to track your favorite items and get notified the moment the price drops.' },
         { strong: 'Unified Experience:', text: ' Say goodbye to cluttered screens. Discover every retailer and secure the perfect price from one clean, user-friendly dashboard.' }
     ]},
-    { type: 'p', text: 'ShopSmart is designed and developed by Sanil, a Computer Engineering student passionate about building clean, functional UI/UX experiences that solve real-world problems. What started as a vision to reduce digital friction has evolved into a fully streamlined tool designed to put the power of price transparency back into the shopper\'s hands.' },
-    { type: 'link', text: 'For further project documentation and technical insights: ', link: 'https://drive.google.com/drive/folders/1-1kzAhM_1jImO96MgvdLvVU9dveHwSMl?usp=sharing', linkText: 'View Official Documentation' }
+    { type: 'h3', text: 'Behind the Code' },
+    { type: 'p', text: 'ShopSmart is designed and developed by Sanil, a Computer Engineering student passionate about building clean, functional UI/UX experiences that solve real-world problems. What started as a vision to reduce digital friction has evolved into a fully streamlined tool designed to put the power of price transparency back into the shopper\'s hands.' }
 ];
 
 export default function AboutPage() {
@@ -91,17 +91,6 @@ export default function AboutPage() {
                                         </li>
                                     ))}
                                 </ul>
-                            );
-                        }
-                        if (el.type === 'link') {
-                            return (
-                                <p key={i}>
-                                    {el.text}
-                                    <a href={el.link} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-yellow)', textDecoration: 'underline' }}>
-                                        {el.linkText}
-                                    </a>
-                                    {el.typing && <span className="cursor"></span>}
-                                </p>
                             );
                         }
                         const Tag = el.type;
