@@ -143,10 +143,13 @@ export default function SearchPage() {
                 body: JSON.stringify(payload)
             });
             
-            if (!idRes.ok) throw new Error("Could not identify product. Please check your internet or try a different search.");
+            if (!idRes.ok) throw new Error("Our AI couldn't identify this product. Please try a clearer photo or use text search.");
             
             const pInfo = await idRes.json();
+            if (!pInfo || !pInfo.product_name) throw new Error("Identification failed. Please try again.");
+            
             setProductInfo(pInfo);
+            setShowUpload(false); // Transition to results dashboard immediately after ID
 
             // Step 2: Fetch Deals for BOTH engines in parallel
             const [geminiRes, shoppingRes] = await Promise.all([
@@ -154,31 +157,38 @@ export default function SearchPage() {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ product_name: pInfo.product_name, brand: pInfo.brand, type: 'gemini' })
-                }),
+                }).catch(() => null),
                 fetch(`${API_URL}/api/deals`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ product_name: pInfo.product_name, brand: pInfo.brand, type: 'shopping' })
-                })
+                }).catch(() => null)
             ]);
 
-            const gData = await geminiRes.json();
-            const sData = await shoppingRes.json();
+            let finalGDeals = [];
+            let finalSDeals = [];
 
-            const finalGDeals = gData.deals || [];
-            const finalSDeals = sData.deals || [];
+            if (geminiRes && geminiRes.ok) {
+                const gData = await geminiRes.json();
+                finalGDeals = gData.deals || [];
+            }
+            
+            if (shoppingRes && shoppingRes.ok) {
+                const sData = await shoppingRes.json();
+                finalSDeals = sData.deals || [];
+            }
 
             if (finalGDeals.length === 0 && finalSDeals.length === 0) {
-                setError("No deals found for this product. Try adjusting your search term.");
+                setError("We identified the product but couldn't find matching deals. Try a different search!");
             }
 
             setGeminiDeals(finalGDeals);
             setShoppingDeals(finalSDeals);
-            setShowUpload(false);
             saveToHistory(pInfo.product_name, finalGDeals, finalSDeals, pInfo, lastImage);
         } catch (err) {
-            console.error(err);
-            setError(err.message || "Failed to fetch deals. Ensure backend is running.");
+            console.error("Search Error:", err);
+            setError(err.message || "Something went wrong. Ensure your backend is running.");
+            setShowUpload(true); // Return to search panel on fatal error
         } finally {
             clearInterval(msgTimer);
             setLoading(false);
