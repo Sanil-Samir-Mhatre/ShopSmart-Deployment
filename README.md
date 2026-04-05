@@ -1,61 +1,36 @@
-# 🛒 ShopSmart: AI-Powered Price Comparison Across E-Commerce Sites
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-**Stop Tab-Hopping. Start Saving.**
-ShopSmart is a high-performance, full-stack application designed to unify the e-commerce search experience. Using **Next.js**, **Python Flask**, and **Google Gemini AI**, it identifies products from images or text and aggregates the best deals from major Indian retailers like Amazon, Flipkart, eBay, and more.
+## Getting Started
 
----
+First, run the development server:
 
-## 🚀 Core Features
-- **✨ AI Visual Discovery**: Upload or capture a product photo, and Google Gemini 1.5 Flash identifies it instantly.
-- **🔍 Dual-Engine Search**: Switch between AI-curated scraping (Option 1) and raw Market aggregate Scraping (Option 2) in real-time.
-- **💎 Premium UX**: Neo-Brutalist design with high-contrast clarity, shimmer loading skeletons, and interactive micro-animations.
-- **👤 Personalized Dashboard**: Persistent search history and wishlist powered by **MongoDB Atlas Cloud**.
-- **🎯 Choice Pick Algorithm**: Automatically highlights the "Best Value" deal based on price, rating, and review count.
-
----
-
-## 🛠️ Tech Stack
-- **Frontend**: Next.js 15 (App Router), React, Vanilla CSS.
-- **Backend**: Python 3.10+, Flask REST API.
-- **Database**: MongoDB Atlas (NoSQL Cloud Integration).
-- **AI Engine**: Google Generative AI (Gemini-2.5-Flash).
-- **External Data**: SerpApi (Google Shopping API Aggregate).
-
----
-
-## 📦 Project Structure
-```text
-/ (Root)
-├── app.py                   # Flask Backend API
-├── requirements.txt         # Backend Dependencies
-├── .gitignore               # Ignored files (node_modules, .env, etc.)
-├── frontend/                # Complete Next.js Application
-│   ├── app/                 # Pages & Layouts
-│   ├── context/             # Search & Auth State Management
-│   └── public/              # Logos & Visual Assets
-└── Report_Sanil Mhatre.txt  # Final Project Report
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
----
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## 🏁 Getting Started
+You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
-### 1. Backend Setup
-1. Clone the repository.
-2. Install dependencies: `pip install -r requirements.txt`
-3. Configure your `.env` with `MONGO_URI`, `GOOGLE_GEMINI_API`, and `SERPAPI_KEY`.
-4. Run: `python app.py`
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-### 2. Frontend Setup
-1. `cd frontend`
-2. Install dependencies: `npm install`
-3. Set `NEXT_PUBLIC_API_URL=http://localhost:5000` in `.env.local`.
-4. Run: `npm run dev`
+## Learn More
 
----
+To learn more about Next.js, take a look at the following resources:
 
-## 🎓 Internship Project
-This project was developed as a final submission for the **Infosys Springboard Virtual Internship 6.0**. It represents 8 weeks of intensive full-stack development, AI integration, and design architecture.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-**Author**: Sanil Samir Mhatre
-**Batch**: 13 (Set-2)
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
