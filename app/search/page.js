@@ -51,7 +51,7 @@ export default function SearchPage() {
         } else if (geminiDeals.length || shoppingDeals.length) {
             setShowUpload(false);
         }
-    }, []);
+    }, [geminiDeals.length, shoppingDeals.length]);
 
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
@@ -98,16 +98,14 @@ export default function SearchPage() {
 
     const handleSearch = async (overrideText = null) => {
         let payload = {};
-        const isHistorySearch = !!overrideText;
-        const currentSearchText = overrideText || textInput;
-
-        const messages = (activeTab === 'text' || isHistorySearch)
+        const queryText = overrideText || textInput;
+        const messages = activeTab === 'text' 
             ? ["The results are loading...", "Aggregating market data...", "Finding the best and lowest prices..."]
             : ["The results are loading...", "Identifying the product in your image...", "Searching across various e-commerce sites to give you the best prices..."];
 
-        if (activeTab === 'text' || isHistorySearch) {
-            if (!currentSearchText) return alert("Please type something!");
-            payload = { text: currentSearchText };
+        if (activeTab === 'text' || overrideText) {
+            if (!queryText) return alert("Please type something!");
+            payload = { text: queryText };
             setLastImage(null);
         } else {
             if (!lastImage) return alert("Please provide an image!");

@@ -45,8 +45,9 @@ export default function Home() {
 
     const fetchHistory = async () => {
         const token = localStorage.getItem('shopsmart_token');
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000';
         try {
-            const res = await fetch('http://127.0.0.1:5000/api/profile', {
+            const res = await fetch(`${API_URL}/api/profile`, {
                 headers: { 'Authorization': token }
             });
             const data = await res.json();
