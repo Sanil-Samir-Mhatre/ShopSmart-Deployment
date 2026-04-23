@@ -1,0 +1,93 @@
+Infosys Springboard Virtual Internship 6.0
+
+Completion Report
+
+Team Details
+Batch Number: Batch 13 set-2
+Start date: February 2, 2026
+Name: Sanil Samir Mhatre
+Internship Duration: 8 Weeks
+
+1. Project Title
+ShopSmart: Web Application for Product Price Comparison Across E-Commerce Sites
+
+2. Project Objective
+The main goal of the ShopSmart project is to alleviate the inefficiency and time-consuming nature of deal hunting across fragmented online stores. The project aims to provide an AI-powered price comparison application that automates product identification via images and text, helping users find the lowest market prices in seconds. This relevance to the organization lies in enhancing consumer decision-making and optimizing the e-commerce shopping experience.
+
+3. Project description in detail
+ShopSmart is an evolved, full-stack e-commerce solution designed to bridge the gap in market price transparency by transforming a core script into a scalable web application.
+
+Approach: 
+The project follows a modular, visual-first workflow. It starts with an AI-driven recognition engine that identifies products from user-uploaded images or text queries. This is followed by a robust scraping engine using SerpApi and a sophisticated filtering system to ensure "exact matches" and exclude irrelevant items. The backend coordinates data between the scraping logic and the frontend, which uses a modern Neo-Brutalist design.
+
+Technology Used:
+- Frontend: Next.js (Modern React Framework), Neo-Brutalist design, Vanilla CSS.
+- Backend: Python Flask (Robust API Proxy), pymongo (NoSQL integration).
+- Database: MongoDB Atlas (Cloud-hosted cluster), transitioned from MySQL for scalability.
+- AI Engine: Google Gemini AI (Product Recognition & Intelligent Scraping).
+- APIs: SerpApi, BeautifulSoup (for real-time price aggregation).
+
+Impact: 
+ShopSmart empowers consumers with actionable market data, significantly reducing the time spent on manual price comparisons—moving from "Tab-Hopping" to instant saving. Its real-world implementation prioritizes efficiency, visual ease, and user-centric savings.
+
+4. Timeline Overview
+Week | Activities Planned | Activities Completed
+Week 1 | Project Orientation & Requirements Analysis | Core requirements and technology stack finalized.
+Week 2 | Image Processing & Recognition Module | Initial CNN model for product identification and image-to-text features.
+Week 3 | Backend API Development & Database Setup | Flask server and MySQL schema for user credentials and search history.
+Week 4 | Scraping Logic & Comparison Integration | Development of robust scraper using SerpApi with advanced filtering.
+Week 5 | UI/UX Design & Branding | Neo-Brutalist homepage design, custom sticker assets, and logo creation.
+Week 6 | Feature Integration: History & Wishlist | Persistent storage and 'Choice Pick' algorithm implementation.
+Week 7 | Database Migration & Cloud Integration | Successfully transitioned from local MySQL to MongoDB Atlas Cloud Cluster.
+Week 8 | UI Refinements & Final Submission | Optimization of image identification, tagline branding, and technical walkthrough.
+
+5a. Key Milestones
+Milestone | Description | Date Achieved
+Project Kickoff | Initial briefing and project scope finalization. | Feb 2, 2026
+Prototype/First Draft | Functional image-to-text recognition feature. | Feb 27, 2026
+Mid-Term Review | Backend-Frontend integration and DB persistence review. | Mar 6, 2026
+Final Submission | Completed application with all core modules. | Mar 27, 2026
+DB Migration | Production-grade MongoDB Atlas cloud integration. | Apr 2, 2026
+Final Polish | Completed application with all polished UI modules. | Apr 5, 2026
+
+5b. Project execution details
+The project was executed in four key phases:
+1. Core Scraping Engine: Developing a robust Python scraper with strict error handling and advanced filtering to exclude accessories and irrelevant parts.
+2. AI Visual Search: Building a structure for image-recognition tools that simulate AI responses for precise product identification.
+3. UI/UX Design & Copywriting: Crafting a unique Neo-Brutalist aesthetic and benefit-driven copy like "Stop Tab-Hopping. Start Saving."
+4. Custom Branding: Creating visual assets including a custom logo with the ₹ symbol and playful sticker assets of internet culture icons for a modern feel.
+5. Database Optimization: Migrating from a relational structure (MySQL) to a flexible, NoSQL document-based structure (MongoDB) to handle dynamic product schemas efficiently.
+
+6. Snapshots / Screenshots
+[Below is a list of visual references included in the technical documentation]
+- Screenshot 1: Neo-Brutalist Homepage with the official ShopSmart logo.
+- Screenshot 2: AI Visual Search interface with simulated PS5 Pro identification.
+- Screenshot 3: Search results list showing aggregated sellers and prices.
+- Screenshot 4: User Search History and profile dashboard.
+- Screenshot 5: Sticker assets (cultural icons) used for user instructions.
+
+7. Challenges Faced
+- Challenge: Handling network blocks and VPN issues during heavy scraping.
+  Resolution: Implemented strict error handling and graceful fallbacks in the backend scraper.
+- Challenge: Excluding irrelevant items like cases or cables from "exact match" results.
+  Resolution: Developed an advanced multi-step filtering system within the scraper.
+- Challenge: Transitioning from a Python script to a scalable React/Node.js architecture.
+  Resolution: Mapped out a robust full-stack tech stack and evaluated modern database solutions.
+- Challenge: Migrating from local MySQL to a cloud-hosted MongoDB Atlas Cluster.
+  Resolution: Refactored Flask API with pymongo, handled URI encoding for cluster security, and verified real-time cloud data persistence.
+
+8. Learnings & Skills Acquired
+- Full-Stack Web Development: Orchestrating Next.js frontend with a Python Flask backend.
+- AI Integration: Practical experience in utilizing Google Gemini for visual product search.
+- UI/UX & Branding: Designing themed interfaces and creating custom visual assets (stickers/logos).
+- NoSQL Database Management: Cloud deployment and CRUD operations using MongoDB Atlas.
+- Professional Communication: Crafting benefit-driven copy and structured project documentation.
+
+9. Testimonials from team
+"The journey from a core scraping script to a full-blown AI-powered application has been incredibly fulfilling. Seeing ShopSmart evolve with a unique Neo-Brutalist identity and robust backend capabilities has reinforced my passion for building user-centric, high-impact technology solutions." - Sanil Samir Mhatre
+
+10. Conclusion
+The ShopSmart project has successfully demonstrated the power of merging AI recognition with real-time price aggregation. By focusing on both technical robustness and visual appeal, I've created a tool that truly simplifies the consumer experience. This internship has been pivotal in building my skills in both frontend design and advanced backend logic.
+
+11. Acknowledgements
+I would like to express my deepest gratitude to Infosys Springboard for this opportunity. I am grateful for the guidance of my mentors throughout this journey, and for the tools like Gemini and Antigravity that helped bring my vision for ShopSmart to life.

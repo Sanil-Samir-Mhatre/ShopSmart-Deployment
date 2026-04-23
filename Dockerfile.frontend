@@ -1,0 +1,26 @@
+# Use a lightweight Node base image
+FROM node:18-alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the package.json and lockfile
+COPY package.json package-lock.json ./
+
+# Install dependencies
+RUN npm install --frozen-lockfile
+
+# Copy the Next.js files (but exclude backend)
+COPY app ./app
+COPY components ./components
+COPY context ./context
+COPY public ./public
+COPY next.config.mjs ./next.config.mjs
+COPY jsconfig.json ./jsconfig.json
+COPY .env .env
+
+# Expose the frontend port
+EXPOSE 3000
+
+# Run the Next.js dev server
+CMD ["npm", "run", "dev"]
