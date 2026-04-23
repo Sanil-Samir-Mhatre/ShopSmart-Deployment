@@ -6,12 +6,38 @@ export default function ContactPage() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
+    const [status, setStatus] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const subject = "Regarding feedback or any complaint";
-        const bodyText = `Name: ${name}\nEmail: ${email}\n\nFeedback/Message:\n${message}`;
-        window.location.href = `mailto:devshopsmart123@yahoo.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+        setLoading(true);
+        setStatus('Sending...');
+
+        try {
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email, message }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setStatus('Message sent successfully!');
+                setName('');
+                setEmail('');
+                setMessage('');
+            } else {
+                setStatus('Failed to send: ' + data.error);
+            }
+        } catch (error) {
+            setStatus('An error occurred. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -64,9 +90,10 @@ export default function ContactPage() {
                         ></textarea>
                     </div>
 
-                    <button type="submit" className="login-btn" style={{ width: '100%', transform: 'none', boxShadow: 'none', marginTop: '1rem' }}>
-                        SEND MESSAGE
+                    <button type="submit" className="login-btn" disabled={loading} style={{ width: '100%', transform: 'none', boxShadow: 'none', marginTop: '1rem', opacity: loading ? 0.7 : 1 }}>
+                        {loading ? 'SENDING...' : 'SEND MESSAGE'}
                     </button>
+                    {status && <p style={{ marginTop: '1rem', textAlign: 'center', fontWeight: 'bold' }}>{status}</p>}
                 </form>
 
                 <p style={{ marginTop: '2rem', textAlign: 'center', fontWeight: '800', color: 'var(--sub-bg-darkblue)' }}>
