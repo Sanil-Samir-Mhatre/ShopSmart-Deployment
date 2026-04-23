@@ -3,3 +3,5 @@ API_KEYS.txt
 __pycache__/
 *.pt
 frontend/node_modules/
+
+frontend/.git_backup/
