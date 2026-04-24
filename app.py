@@ -175,7 +175,7 @@ def add_history():
 def identify():
     try:
         data = request.json
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-flash-latest')
         
         prompt = "You are an expert product identifier. Analyze this product image or text query and extract accurate information. Return strictly in valid JSON format: {\"product_name\":\"\", \"brand\": \"\", \"model_number\": \"\", \"category\": \"\", \"key_features\": []}. Do not include markdown."
         
@@ -212,7 +212,7 @@ def deals():
         exact_search_term = f"{brand} {product_name}".strip()
         
         if search_type == 'gemini':
-            model = genai.GenerativeModel('gemini-2.5-flash')
+            model = genai.GenerativeModel('gemini-flash-latest')
             prompt = f"""
 You are an expert E-Commerce Aggregator API.
 The user is searching for: "{brand} {product_name}".
