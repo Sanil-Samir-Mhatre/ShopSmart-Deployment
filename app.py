@@ -187,9 +187,24 @@ def identify():
             contents.append(f"Product Search Query: {data['text']}")
             
         response = model.generate_content(contents)
-        text = response.text.replace('```json', '').replace('```', '').strip()
+        raw_text = response.text
+        print(f"DEBUG: identify raw response: {raw_text}")
         
-        data = json.loads(text)
+        # Robust JSON cleaning
+        text = raw_text.replace('```json', '').replace('```', '').strip()
+        
+        try:
+            data = json.loads(text)
+        except Exception as e:
+            print(f"DEBUG: identify JSON parse error: {e}")
+            # Try to find JSON within the text if AI added conversational filler
+            import re
+            json_match = re.search(r'\{.*\}', text, re.DOTALL)
+            if json_match:
+                data = json.loads(json_match.group())
+            else:
+                raise Exception("AI returned invalid JSON format for identification.")
+
         if not data.get('product_name'):
             return jsonify({"error": "Our AI couldn't identify this product. Please try a clearer photo or use text search."}), 400
             
@@ -234,8 +249,23 @@ Example Object structure:
 }}
 """
             response = model.generate_content(prompt)
-            text = response.text.replace('```json', '').replace('```', '').strip()
-            deals_list = json.loads(text)
+            raw_text = response.text
+            print(f"DEBUG: deals raw response: {raw_text}")
+            
+            # Robust JSON cleaning
+            text = raw_text.replace('```json', '').replace('```', '').strip()
+            
+            try:
+                deals_list = json.loads(text)
+            except Exception as e:
+                print(f"DEBUG: deals JSON parse error: {e}")
+                import re
+                json_match = re.search(r'\[.*\]', text, re.DOTALL)
+                if json_match:
+                    deals_list = json.loads(json_match.group())
+                else:
+                    raise Exception("AI returned invalid JSON format for deals.")
+                    
             return jsonify({"deals": deals_list})
             
         else:
