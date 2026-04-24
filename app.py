@@ -17,7 +17,7 @@ app = Flask(__name__)
 CORS(app)  
 
 # --- Configuration Keys ---
-GEMINI_KEY = os.getenv("GOOGLE_GEMINI_API")
+GEMINI_KEY = os.getenv("GEMINI_API_KEY")
 SERPAPI_KEY = os.getenv("SERPAPI_KEY")
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 MYSQL_DATABASE = "shopsmart" # Keeping the same name for consistency
